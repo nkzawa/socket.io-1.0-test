@@ -1,0 +1,13 @@
+{
+  "name": "socket.io-1.0-test",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "socket.io": "nkzawa/socket.io",
+    "express": "3.1.1",
+    "hjs": "*"
+  }
+}

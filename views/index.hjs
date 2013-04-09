@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+    <p>Welcome to {{ title }}</p>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = eio('http://localhost:3000');
+      socket.emit('foo', {hello: 'server'}, function(data) {
+        console.log(data);
+      });
+    </script>
+  </body>
+</html>
