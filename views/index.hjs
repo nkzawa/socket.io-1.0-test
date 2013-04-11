@@ -9,9 +9,19 @@
     <p>Welcome to {{ title }}</p>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      var socket = io('http://localhost:3000');
-      socket.emit('foo', {hello: 'server'}, function(data) {
-        console.log(data);
+      var socket = io('http://localhost:3000?v=1');
+
+      socket.on('connect', function() {
+        console.log('!connect');
+
+        socket.emit('greeting', {hello: 'server'}, function(data) {
+          console.log('!greeting', data);
+        });
+      });
+
+      var foo = io('http://localhost:3000/foo?v=2');
+      socket.on('connect', function() {
+        console.log('!/foo connect');
       });
     </script>
   </body>

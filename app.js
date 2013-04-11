@@ -37,13 +37,18 @@ var server = http.createServer(app)
   , io = socketio(server);
 
 io.on('connection', function(socket) {
-  console.log('!connection');
+  console.log('!connection', socket.request.query);
 
-  socket.on('foo', function(data, callback) {
-    console.log('foo:', data);
+  socket.on('greeting', function(data, callback) {
+    console.log('!greeting:', data);
     callback({hello: 'client'});
   });
 });
+
+io.of('/foo').on('connection', function(socket) {
+  console.log('!/foo connection', socket.request.query);
+});
+
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
