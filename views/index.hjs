@@ -7,21 +7,60 @@
   <body>
     <h1>{{ title }}</h1>
     <p>Welcome to {{ title }}</p>
+    <button id="sendBtn" type="button">send</button>
+
     <script src="/socket.io/socket.io.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>
-      var socket = io('http://localhost:3000?v=1');
+      var socket = io('http://localhost:3000?v=1', {
+          reconnection: true,
+          timeout: false
+        });
+
+      for (var id in io.managers) {
+        (function(manager) {
+          console.log(manager);
+          [
+            'connect', 'connect_error', 'connect_timeout',
+            'reconnect', 'reconnect_error', 'reconnect_failed',
+            'open', 'packet', 'error'
+          ].forEach(function(event) {
+            manager.on(event, function() {
+              console.log('Manager#on:', event, arguments);
+            });
+          });
+        })(io.managers[id]);
+      }
 
       socket.on('connect', function() {
         console.log('!connect');
 
-        socket.emit('greeting', {hello: 'server'}, function(data) {
-          console.log('!greeting', data);
+        socket.on('event', function(data) {
+          console.log('!event', data);
         });
+        socket.on('disconnect', function() {
+          console.log('!disconnect');
+        });
+
+        //socket.emit('greeting', {hello: 'server'}, function(data) {
+        //  console.log('!greeting', data);
+        //});
       });
 
-      var foo = io('http://localhost:3000/foo?v=2');
-      socket.on('connect', function() {
-        console.log('!/foo connect');
+      setTimeout(function() {
+        var foo = io('http://localhost:3000/foo?v=2');
+        foo.on('connect', function() {
+          console.log('!/foo connect');
+        });
+      }, 3000);
+
+      $(function() {
+        var count = 0;
+        $('#sendBtn').click(function() {
+          foo.emit('echo', count++, function(data) {
+            console.log('!echo', data);
+          });
+        });
       });
     </script>
   </body>

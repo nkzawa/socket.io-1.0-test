@@ -33,8 +33,17 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
-var server = http.createServer(app)
-  , io = socketio(server);
+var server = http.createServer(app),
+  io = socketio(server);
+
+io.sockets.use(function(socket, next) {
+  console.log('/ 1');
+  setTimeout(next, 1000);
+});
+io.sockets.use(function(socket, next) {
+  console.log('/ 2');
+  setTimeout(next, 1000);
+});
 
 io.on('connection', function(socket) {
   console.log('!connection', socket.request.query);
@@ -45,10 +54,36 @@ io.on('connection', function(socket) {
   });
 });
 
-io.of('/foo').on('connection', function(socket) {
-  console.log('!/foo connection', socket.request.query);
+var fooIo = io.of('/foo');
+fooIo.use(function(socket, next) {
+  console.log('/foo 1');
+  setTimeout(next, 100);
 });
+fooIo.use(function(socket, next) {
+  console.log('/foo 2');
+  setTimeout(next, 100);
+});
+fooIo.on('connection', function(socket) {
+  console.log('!/foo connection', socket.request.query);
 
+  socket.on('echo', function(data, callback) {
+    console.log('!echo:', data);
+    callback(data);
+  });
+});
+/* 
+Expected results:
+  '/ 1'
+  '/ 2'
+  '/foo 1'
+  '/foo 2'
+
+but gets:
+  '/ 1'
+  '/foo 1'
+  '/ 2'
+  '/foo 2'
+*/
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
