@@ -12,11 +12,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script>
-      var socket = io('http://localhost:3000?v=1', {
-          reconnection: true,
-          timeout: false
-        });
-
+      var socket = io('http://localhost:3000?v=1');
       for (var id in io.managers) {
         (function(manager) {
           console.log(manager);
@@ -47,21 +43,26 @@
         //});
       });
 
-      setTimeout(function() {
-        var foo = io('http://localhost:3000/foo?v=2');
-        foo.on('connect', function() {
-          console.log('!/foo connect');
-        });
-      }, 3000);
+      //var foo = io('http://localhost:3000/foo?v=2');
+      //foo.on('connect', function() {
+      //  console.log('!/foo connect');
+      //});
 
-      $(function() {
-        var count = 0;
-        $('#sendBtn').click(function() {
-          foo.emit('echo', count++, function(data) {
-            console.log('!echo', data);
-          });
-        });
+      //$(function() {
+      //  var count = 0;
+      //  $('#sendBtn').click(function() {
+      //    foo.emit('echo', count++, function(data) {
+      //      console.log('!echo', data);
+      //    });
+      //  });
+      //});
+
+      var bar = io('http://localhost:3000/bar?v=3');
+      bar.on('connect', function() {
+        console.log('!/bar connect');
+        bar.emit('foo', 1);
       });
+
     </script>
   </body>
 </html>

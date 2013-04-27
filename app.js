@@ -71,7 +71,18 @@ fooIo.on('connection', function(socket) {
     callback(data);
   });
 });
-/* 
+
+var barIo = io.of('/bar');
+barIo.use(function(socket, next) {
+  console.log('/bar 1');
+  next();
+});
+barIo.use(function(socket, next) {
+  console.log('/bar 2');
+  next();
+});
+
+/*
 Expected results:
   '/ 1'
   '/ 2'
